@@ -9,5 +9,6 @@ module WapiRails
     config.i18n.default_locale = 'en'
     config.assets.paths << Rails.root.join('node_modules')
     config.load_defaults 5.2
+    config.time_zone = 'Santiago'
   end
 end
