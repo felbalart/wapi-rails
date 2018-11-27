@@ -1,5 +1,7 @@
 class Message < ApplicationRecord
   before_save :set_digest_if_blank
+  extend Enumerize
+  enumerize :direction, in: [:sent, :received]
 
   def set_digest_if_blank
     set_digest if digest.blank?
@@ -11,7 +13,7 @@ class Message < ApplicationRecord
 
   def build_digest
     Digest::MD5.hexdigest(
-      [msg_type, sender, destinatary, text, blob_url, time, duration, status,
+      [msg_type, sender, destinatary, text, blob_url, time, duration,
        auto_text, background_image].join('$;')
     )
   end
@@ -35,6 +37,7 @@ end
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  digest           :string(255)
+#  direction        :string(255)
 #
 # Indexes
 #
