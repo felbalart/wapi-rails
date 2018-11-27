@@ -1,5 +1,4 @@
 class Reader
-  Message = Struct.new(:contact, :time, :body)
   def initialize(driver)
     @driver = driver
     @messages = []
