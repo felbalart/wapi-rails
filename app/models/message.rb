@@ -2,6 +2,7 @@ class Message < ApplicationRecord
   belongs_to :account
   before_save :set_digest_if_blank
   extend Enumerize
+  enumerize :conv_type, in: [:direct, :group]
   enumerize :direction, in: [:sent, :received]
   enumerize :status, in: [:clock, :check, :double_check, :double_check_ack, :not_available]
 
@@ -41,6 +42,8 @@ end
 #  digest           :string(255)
 #  direction        :string(255)
 #  account_id       :bigint(8)
+#  conv_type        :string(255)
+#  conv_title       :string(255)
 #
 # Indexes
 #

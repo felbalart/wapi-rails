@@ -1,6 +1,6 @@
 module Parsers
   class BaseParser
-    def parse_message(msg_div, sender, destinatary, time = nil)
+    def parse_message(msg_div, time = nil)
       msg_type = find_msg_type(msg_div)
       case msg_type
         when :ignorable_tag
@@ -10,14 +10,9 @@ module Parsers
         when :date_tag
           return DateTagParser.new.parse(msg_div)
         else
-      parser_klass = Object.const_get "Parsers::#{msg_type.to_s.classify}Parser"
-      msg = parser_klass.new.parse(msg_div)
-      return unless msg # temp!
-      return puts(msg.attributes) # temp
-      msg.sender = sender
-      msg.destinatary = destinatary
-      msg.time ||= time
-      process_read_message(msg)
+        parser_klass = Object.const_get "Parsers::#{msg_type.to_s.classify}Parser"
+        msg = parser_klass.new.parse(msg_div) # Warning:  might be nil as some parsers are pending TODO
+        return msg
       end
     end
 
@@ -52,8 +47,8 @@ module Parsers
       end
     end
 
+    # TODO move this out of here (not client's responsibility)
     def process_read_message(msg)
-      # TODO move this out of here (not client's responsibility)
       msg.set_digest_if_blank
       persisted_msg = Message.find_by(digest: msg.digest)
       if persisted_msg # already existing message

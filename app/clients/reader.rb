@@ -1,14 +1,18 @@
 class Reader
-  def initialize(driver)
-    @driver = driver
+  attr_accessor :browser
+  def initialize(account, browser: nil, driver: :chrome)
+    @browser = browser || Pincers.for_webdriver(driver)
+    @account = account
     @messages = []
   end
 
   def read(since)
     ensure_logged
+    # TODO ensure logged in correct account
     conv_divs_updated_since(since).each do |conv_div|
       read_conv(conv_div, since)
     end
+    @messages
   rescue StandardError => ex
     binding.pry
   end
@@ -17,17 +21,47 @@ class Reader
 
   def read_conv(conv_div, since)
     conv_div.click
-    read_current_conv(since)
-    binding.pry
+    msgs = read_current_conv(since)
+    @messages += msgs
   end
 
   def read_current_conv(since)
-    sender = 'temp_send' # TODO read sender & destinatary name
-    destinatary = 'temp_dest'
-    msgs_divs = browser.search("[id='main'] .copyable-area [tabindex='0'] > div:last-child > div")
     # TODO scroll down and read according to 'since' param, instead of just all visible in not-scrolled view
-    msgs = msgs_divs.map { |md| Parsers::BaseParser.new.parse_message(md, sender, destinatary) }.compact
-    @messages += msgs
+    conv_type, conv_title = extract_current_conv_data
+    msgs_divs = browser.search("[id='main'] .copyable-area [tabindex='0'] > div:last-child > div")
+    msgs_divs.map { |md| build_msg_from_div(conv_type, conv_title, md) }.compact
+  end
+
+  def build_msg_from_div(conv_type, conv_title, msg_div)
+    msg = Parsers::BaseParser.new.parse_message(msg_div)
+    return unless msg
+    msg.conv_type = conv_type
+    msg.conv_title = conv_title
+    if conv_type == :group
+      msg.sender ||= @account.name if msg.direction.sent?
+      msg.destinatary = conv_title
+    elsif conv_type == :direct
+      if msg.direction.received?
+        msg.sender ||= conv_title
+        msg.destinatary = @account.name
+      elsif msg.direction.sent?
+        msg.sender ||= @account.name
+        msg.destinatary = conv_title
+      else
+        raise "Unexpected msg direction '#{msg.direction}'"
+      end
+    else
+      raise "Unexpected msg conv_type '#{conv_type}'"
+    end
+    msg
+  end
+
+  def extract_current_conv_data
+    conv_data_div = browser.search("[id='main'] > header > div[role='button'").last
+    data = conv_data_div.text.split("\n")
+    conv_title = data.first
+    conv_type = data[1] ? :group : :direct
+    [conv_type, conv_title]
   end
 
   def conv_divs_updated_since(since)
@@ -36,17 +70,10 @@ class Reader
     conv_div = pane_side.search('div').find { |d| d.attribute('style').include?('z-index') }
     conv_div_class = conv_div.attribute('class')
     conv_divs = pane_side.search(".#{conv_div_class}")
-    date_filtered_conv_divs = conv_divs.reject do |cd|
+    conv_divs.reject do |cd| # filter by 'since' date
       date_data = cd.text.split("\n").second
       parse_conv_div_date(date_data) < since
     end
-    temp_print(conv_divs, 'Todos')
-    temp_print(date_filtered_conv_divs, "Filtrados con fecha #{since}")
-  end
-
-  def temp_print(cds, nombre)
-    puts "nombre: #{nombre} tiene #{cds.count} elementos"
-    cds.each_with_index {|eldiv, i| puts(i.to_s + ". " + eldiv.text) }
   end
 
   WHATSAPP_WEB_URL = 'http://web.whatsapp.com'
@@ -79,9 +106,5 @@ class Reader
 
   def logged?
     browser.search('span[data-icon=chat]').present?
-  end
-
-  def browser
-    @browser ||= Pincers.for_webdriver @driver
   end
 end
