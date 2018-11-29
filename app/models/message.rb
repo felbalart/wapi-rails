@@ -1,4 +1,5 @@
 class Message < ApplicationRecord
+  belongs_to :account
   before_save :set_digest_if_blank
   extend Enumerize
   enumerize :direction, in: [:sent, :received]
@@ -39,8 +40,14 @@ end
 #  updated_at       :datetime         not null
 #  digest           :string(255)
 #  direction        :string(255)
+#  account_id       :bigint(8)
 #
 # Indexes
 #
-#  index_messages_on_digest  (digest)
+#  index_messages_on_account_id  (account_id)
+#  index_messages_on_digest      (digest)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (account_id => accounts.id)
 #

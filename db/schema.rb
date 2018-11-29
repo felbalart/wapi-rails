@@ -10,7 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_27_222347) do
+ActiveRecord::Schema.define(version: 2018_11_29_045049) do
+
+  create_table "accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "phone_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "messages", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "msg_type"
@@ -27,7 +34,10 @@ ActiveRecord::Schema.define(version: 2018_11_27_222347) do
     t.datetime "updated_at", null: false
     t.string "digest"
     t.string "direction"
+    t.bigint "account_id"
+    t.index ["account_id"], name: "index_messages_on_account_id"
     t.index ["digest"], name: "index_messages_on_digest"
   end
 
+  add_foreign_key "messages", "accounts"
 end

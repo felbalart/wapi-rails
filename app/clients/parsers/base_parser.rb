@@ -45,7 +45,6 @@ module Parsers
           return :giant_emoji
         elsif msg_div.search('span[dir=ltr]').any? || msg_div.search('span[dir=auto]').any?
           return :plain_text
-        # TODO handle deleted messages!
         else
           # raise "Unhandled msg_type #{msg_div.try(:text)}"
           return "Unhandled msg_type #{msg_div.try(:text)}"
