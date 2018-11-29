@@ -9,12 +9,12 @@ class Reader
     conv_divs_updated_since(since).each do |conv_div|
       read_conv(conv_div, since)
     end
+  rescue StandardError => ex
+    binding.pry
   end
 
   private
 
-  include MessageParser
-  
   def read_conv(conv_div, since)
     conv_div.click
     read_current_conv(since)
@@ -22,10 +22,11 @@ class Reader
   end
 
   def read_current_conv(since)
-    contact_name = 'blah' # TODO read contact name
-    msgs_divs = browser.search("[id='main'] .copyable-area [tabindex='0'] > div:nth-child(3) > div")
+    sender = 'temp_send' # TODO read sender & destinatary name
+    destinatary = 'temp_dest'
+    msgs_divs = browser.search("[id='main'] .copyable-area [tabindex='0'] > div:last-child > div")
     # TODO scroll down and read according to 'since' param, instead of just all visible in not-scrolled view
-    msgs = msgs_divs.map { |md| parse_message(md, contact_name) }.compact
+    msgs = msgs_divs.map { |md| Parsers::BaseParser.new.parse_message(md, sender, destinatary) }.compact
     @messages += msgs
   end
 

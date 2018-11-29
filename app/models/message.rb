@@ -2,6 +2,7 @@ class Message < ApplicationRecord
   before_save :set_digest_if_blank
   extend Enumerize
   enumerize :direction, in: [:sent, :received]
+  enumerize :status, in: [:clock, :check, :double_check, :double_check_ack, :not_available]
 
   def set_digest_if_blank
     set_digest if digest.blank?
