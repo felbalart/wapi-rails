@@ -5,6 +5,7 @@ Bundler.require(*Rails.groups)
 
 module WapiRails
   class Application < Rails::Application
+    config.autoload_paths << "#{Rails.root}/app/services"
     config.i18n.fallbacks = [:es, :en]
     config.i18n.default_locale = 'en'
     config.assets.paths << Rails.root.join('node_modules')

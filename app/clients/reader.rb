@@ -35,6 +35,7 @@ class Reader
   def build_msg_from_div(conv_type, conv_title, msg_div)
     msg = Parsers::BaseParser.new.parse_message(msg_div)
     return unless msg
+    msg.account = @account
     msg.conv_type = conv_type
     msg.conv_title = conv_title
     if conv_type == :group

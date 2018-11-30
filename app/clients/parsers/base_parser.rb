@@ -46,17 +46,5 @@ module Parsers
         end
       end
     end
-
-    # TODO move this out of here (not client's responsibility)
-    def process_read_message(msg)
-      msg.set_digest_if_blank
-      persisted_msg = Message.find_by(digest: msg.digest)
-      if persisted_msg # already existing message
-        persisted_msg.status = msg.status
-        persisted_msg.save!
-      else # new message
-        msg.save!
-      end
-    end
   end
 end
