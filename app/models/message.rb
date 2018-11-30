@@ -5,6 +5,9 @@ class Message < ApplicationRecord
   enumerize :conv_type, in: [:direct, :group]
   enumerize :direction, in: [:sent, :received]
   enumerize :status, in: [:clock, :check, :double_check, :double_check_ack, :not_available]
+  validates_uniqueness_of :digest
+  validates_presence_of :msg_type, :sender, :destinatary, :time, :status, :digest, :direction,
+    :account_id, :conv_type, :conv_title
 
   def set_digest_if_blank
     set_digest if digest.blank?
@@ -27,23 +30,23 @@ end
 # Table name: messages
 #
 #  id               :bigint(8)        not null, primary key
-#  msg_type         :string(255)
-#  sender           :string(255)
-#  destinatary      :string(255)
-#  text             :string(255)
-#  blob_url         :string(255)
+#  msg_type         :string(191)
+#  sender           :string(191)
+#  destinatary      :string(191)
+#  text             :text(65535)
+#  blob_url         :string(191)
 #  time             :datetime
 #  duration         :integer
-#  status           :string(255)
-#  auto_text        :string(255)
+#  status           :string(191)
+#  auto_text        :string(191)
 #  background_image :text(65535)
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  digest           :string(255)
-#  direction        :string(255)
+#  digest           :string(191)
+#  direction        :string(191)
 #  account_id       :bigint(8)
-#  conv_type        :string(255)
-#  conv_title       :string(255)
+#  conv_type        :string(191)
+#  conv_title       :string(191)
 #
 # Indexes
 #

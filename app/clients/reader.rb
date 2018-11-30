@@ -13,8 +13,6 @@ class Reader
       read_conv(conv_div, since)
     end
     @messages
-  rescue StandardError => ex
-    binding.pry
   end
 
   private
@@ -61,7 +59,7 @@ class Reader
     conv_data_div = browser.search("[id='main'] > header > div[role='button'").last
     data = conv_data_div.text.split("\n")
     conv_title = data.first
-    conv_type = data[1] ? :group : :direct
+    conv_type = data[1].in?([nil, 'click here for contact info']) ? :direct : :group
     [conv_type, conv_title]
   end
 
