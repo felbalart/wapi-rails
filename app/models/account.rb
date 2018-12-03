@@ -1,5 +1,6 @@
 class Account < ApplicationRecord
   has_many :messages
+  has_many :outbox_messages
 end
 
 # == Schema Information

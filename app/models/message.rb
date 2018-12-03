@@ -1,5 +1,6 @@
 class Message < ApplicationRecord
   belongs_to :account
+  has_one :outbox_message
   before_save :set_digest_if_blank
   extend Enumerize
   enumerize :conv_type, in: [:direct, :group]
