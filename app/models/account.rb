@@ -12,4 +12,5 @@ end
 #  phone_number :string(191)
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  last_read_at :datetime         default(Thu, 31 Dec 2009 21:00:00 -03 -03:00)
 #
