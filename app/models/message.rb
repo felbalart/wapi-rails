@@ -6,6 +6,7 @@ class Message < ApplicationRecord
   enumerize :conv_type, in: [:direct, :group]
   enumerize :direction, in: [:sent, :received]
   enumerize :status, in: [:clock, :check, :double_check, :double_check_ack, :not_available]
+  # TODO enumerize msg_type
   validates_uniqueness_of :digest
   validates_presence_of :msg_type, :sender, :destinatary, :time, :status, :digest, :direction,
     :account_id, :conv_type, :conv_title

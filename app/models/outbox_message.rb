@@ -1,6 +1,8 @@
 class OutboxMessage < ApplicationRecord
   belongs_to :account
   belongs_to :message, optional: true
+  enumerize :msg_type, in: [:plain_text] # TODO handle other types
+  # TODO define status lifecycle
 end
 
 # == Schema Information

@@ -1,12 +1,6 @@
-class Reader
-  attr_accessor :browser
-  def initialize(account, browser: nil, driver: :chrome)
-    @browser = browser || Pincers.for_webdriver(driver)
-    @account = account
-    @messages = []
-  end
-
+class Reader < BaseClient
   def read(since)
+    @messages = []
     ensure_logged
     # TODO ensure logged in correct account
     conv_divs_updated_since(since).each do |conv_div|
@@ -75,17 +69,6 @@ class Reader
     end
   end
 
-  WHATSAPP_WEB_URL = 'http://web.whatsapp.com'
-  def ensure_logged
-    return true if logged?
-    browser.goto WHATSAPP_WEB_URL
-    # binding.pry # scan QR code
-    browser.wait(timeout: 60) { logged? }
-    # raise "Unable to login" unless logged?
-    puts 'Logged succesfully! :)'
-    true
-  end
-
   def parse_conv_div_date(txt)
     if txt.match(/^\d{1,2}:\d{2} (A|P)M$/) # same-day time
       txt.to_time
@@ -103,7 +86,5 @@ class Reader
     end
   end
 
-  def logged?
-    browser.search('span[data-icon=chat]').present?
-  end
+
 end
