@@ -1,8 +1,9 @@
 class OutboxMessage < ApplicationRecord
   belongs_to :account
   belongs_to :message, optional: true
+  extend Enumerize
   enumerize :msg_type, in: [:plain_text] # TODO handle other types
-  # TODO define status lifecycle
+  enumerize :outbox_status, in: [:pending, :sent, :confirmed], scope: true
 end
 
 # == Schema Information
@@ -18,6 +19,7 @@ end
 #  outbox_status :string(191)
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  sent_at       :datetime
 #
 # Indexes
 #
