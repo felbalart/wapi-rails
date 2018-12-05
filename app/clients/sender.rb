@@ -1,7 +1,7 @@
 class Sender < BaseClient
   def send_otbx_msg(otbx_msg)
     send_raw(otbx_msg.destinatary, otbx_msg.content)
-    otbx_msg.update(status: :sent)
+    otbx_msg.update(outbox_status: :sent, sent_at: Time.current.change(sec: 0, usec: 0))
   end
 
   def send_raw(destinatary, msg)

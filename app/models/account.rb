@@ -1,6 +1,10 @@
 class Account < ApplicationRecord
   has_many :messages
   has_many :outbox_messages
+
+  def touch_last_read_at
+    update(last_read_at: Time.current)
+  end
 end
 
 # == Schema Information

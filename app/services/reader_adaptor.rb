@@ -7,14 +7,14 @@ class ReaderAdaptor
 
 
   def read(since)
-    pre_read_msg_count = Message.count
     start_time = Time.current
     puts "Starting to read for account #{@account.name} at #{start_time} messages since #{since}"
     msgs = Reader.new(@account, browser: @browser).read(since)
     process_messages(msgs)
-    puts("Finished reading for #{@account.name} since #{since} captured #{msgs.count} (#{Message.count - pre_read_msg_count} new)" +
+    novelties = msgs.select(&:novelty)
+    puts("Finished reading for #{@account.name} since #{since} captured #{msgs.count} (#{novelties.count} novelties)" +
     " ending at #{Time.current} (spent #{Time.current - start_time} secs)")
-    msgs
+    { all: msgs, novelties: novelties}
   end
 
   def process_messages(msgs)
@@ -27,6 +27,7 @@ class ReaderAdaptor
       if msg.persisted?
         msg.update(status: status_hash[msg.digest]) if msg.status != status_hash[msg.digest]
       else # new message
+        msg.novelty = true
         msg.save!
       end
     end

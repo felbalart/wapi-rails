@@ -11,6 +11,8 @@ class Message < ApplicationRecord
   validates_presence_of :msg_type, :sender, :destinatary, :time, :status, :digest, :direction,
     :account_id, :conv_type, :conv_title
 
+  attr_accessor :novelty
+
   def set_digest_if_blank
     set_digest if digest.blank?
   end
